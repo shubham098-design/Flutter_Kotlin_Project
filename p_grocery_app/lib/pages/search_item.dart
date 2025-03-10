@@ -1,0 +1,104 @@
+import 'package:flutter/material.dart';
+import 'package:p_grocery_app/service/widget_support.dart';
+
+class SearchItemPage extends StatefulWidget {
+  const SearchItemPage({super.key});
+
+  @override
+  State<SearchItemPage> createState() => _SearchItemPageState();
+}
+
+class _SearchItemPageState extends State<SearchItemPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Material(
+                  elevation: 3,
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),),
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+
+                Text("Search Item", style: AppWidget.simpleheadlinetextfieldStyle(),),
+                ClipRRect(borderRadius: BorderRadius.circular(60),
+                    child: Icon(Icons.search,size: 60,),)
+
+              ],
+            ),
+          ),
+          SizedBox(height: 20,),
+          Container(
+            margin: EdgeInsets.only(left: 8,right: 8),
+            padding: EdgeInsets.only(left: 8,right: 8),
+            width: MediaQuery.of(context).size.width , // Set a finite width
+            decoration: BoxDecoration(color: Color(0xffeeeeee),
+                borderRadius: BorderRadius.circular(10)),
+            child: TextField(
+              decoration: InputDecoration(border: InputBorder.none,
+                  hintText: "Search Grocery...",
+                  hintStyle: AppWidget.simpleheadlinetextfieldStyle(),
+                  prefixIcon: Icon(Icons.search, color: Colors.black,)),
+            ),
+          ),
+          SizedBox(height: 20,),
+          Expanded(
+            child: GridView.builder(
+              padding: EdgeInsets.only(left: 8,right: 8),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.63,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10),
+              itemCount: 10,
+              itemBuilder: (BuildContext context, int index) {
+                return Container(
+                  padding: EdgeInsets.only(left: 10,top: 10,right: 10,bottom: 10),
+                    decoration: BoxDecoration(color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                      border: Border.all(color: Colors.black12,width: 2)
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Center(child: Image.asset("images/cabbage.png", height: 110, width: 110, fit: BoxFit.contain,)),
+                          SizedBox(height: 10,),
+                          Text("Cabbage", style: AppWidget.simpleheadlinetextfieldStyle(),),
+                          Text("Vegetable", style: AppWidget.SimpleheadlinetextfieldStyle(),),
+                          SizedBox(height: 10,),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                            Text("\$20.00", style: AppWidget.simpleheadlinetextfieldStyle(),),
+                            Container(
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                  color: Color(0xff37a750),
+                                  borderRadius: BorderRadius.circular(10)
+                              ),
+                              child: Icon(Icons.add,color: Colors.white,),
+                            )
+                          ],)
+                        ]
+                    )
+                );
+              },),
+          )
+        ],
+      ),
+    );
+  }
+}
