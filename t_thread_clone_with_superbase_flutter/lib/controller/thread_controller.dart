@@ -1,0 +1,162 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
+import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:t_thread_clone_with_superbase_flutter/models/comment_model.dart';
+import 'package:t_thread_clone_with_superbase_flutter/models/post_model.dart';
+import 'package:t_thread_clone_with_superbase_flutter/utils/env.dart';
+import 'package:t_thread_clone_with_superbase_flutter/utils/helper.dart';
+import 'package:uuid/uuid.dart';
+
+import '../services/navigation_service.dart';
+import '../services/supabase_service.dart';
+
+class ThreadController extends GetxController {
+  final TextEditingController textEditingController = TextEditingController(
+    text: "",
+  );
+  var content = "".obs;
+  var loading = false.obs;
+  Rx<File?> image = Rx<File?>(null);
+  var showThreadLoading = false.obs;
+  Rx<PostModel> post = Rx<PostModel>(PostModel());
+  var showReplyLoading = false.obs;
+  RxList<CommentModel> replies = RxList<CommentModel>();
+
+  void pickImage() async {
+    File? file = await pickImageFromGallery();
+    if (file != null) {
+      image.value = file;
+    }
+  }
+
+  @override
+  void onClose() {
+    textEditingController.dispose();
+    super.onClose();
+  }
+
+
+
+  void store(String userId) async {
+    try {
+      loading.value = true;
+      const uuid = Uuid();
+      final dir = "$userId/${uuid.v6()}";
+      var imagePath = "";
+      if (image.value != null && image.value!.existsSync()) {
+        imagePath = await SupabaseServices.client.storage
+            .from(Env.s3Bucket)
+            .upload(dir, image.value!);
+      }
+
+      // * Add post in Db
+
+      await SupabaseServices.client.from("posts").insert({
+        "user_id": userId,
+        "content": content.value,
+        "image": imagePath.isNotEmpty ? imagePath : null,
+      });
+      loading.value = false;
+      resetState();
+      Get.find<NavigationService>().currentIndex.value = 0;
+      showSnackBar("Success", "Thread added Successfully! ");
+    } on StorageException catch (e) {
+      loading.value = false;
+      showSnackBar("Error", e.message);
+    } catch (e) {
+      loading.value = false;
+      showSnackBar("Error", e.toString());
+    }
+  }
+
+
+  // * To show post/thread
+  void show(int postId) async {
+    try{
+      post.value = PostModel();
+      replies.value = [];
+      showThreadLoading.value = true;
+      final responce = await SupabaseServices.client.from("posts").select('''
+      id ,content , image ,created_at ,comment_count , like_count,user_id,
+      user:user_id (email , metadata) , likes:likes (user_id ,post_id)
+      ''').eq("id", postId).single();
+
+      showThreadLoading.value = false;
+      post.value = PostModel.fromJson(responce);
+
+      // * Fetch  replies
+      fetchPostReplies(postId);
+
+    }catch (e){
+      showThreadLoading.value = false;
+      showSnackBar("Error", e.toString());
+    }
+  }
+
+  // * Like and dislike the post
+  Future<void> likeDislike(
+      String status, int postId, String postUserId, String userId) async {
+    if (status == "1") {
+      await SupabaseServices.client
+          .from("likes")
+          .insert({"user_id": userId, "post_id": postId});
+
+      // * Add Comment notification
+      await SupabaseServices.client.from("notifications").insert({
+        "user_id": userId,
+        "notification": "liked on your post.",
+        "to_user_id": postUserId,
+        "post_id": postId,
+      });
+
+      // * Increment like counter in post table
+      await SupabaseServices.client
+          .rpc("like_increment", params: {"count": 1, "row_id": postId});
+    } else if (status == "0") {
+      await SupabaseServices.client
+          .from("likes")
+          .delete()
+          .match({"user_id": userId, "post_id": postId});
+
+      // * Decrement like counter in post table
+      await SupabaseServices.client
+          .rpc("like_decrement", params: {"count": 1, "row_id": postId});
+    }
+  }
+
+  // * Fetch past replies
+  void fetchPostReplies(int postId) async{
+    try{
+      showReplyLoading.value = true;
+      final List<dynamic> responce = await SupabaseServices.client
+          .from("comments")
+          .select('''
+          user_id , post_id , reply , created_at , user:user_id (email , metadata)
+          ''')
+          .eq("post_id", postId);
+
+      showReplyLoading.value = false;
+      if(responce.isNotEmpty){
+        replies.value = [
+          for(var item in responce) CommentModel.fromJson(item)
+        ];
+      }
+
+    }catch (e){
+      showReplyLoading.value = false;
+      showSnackBar("Error", e.toString());
+    }
+  }
+
+  // * To rest thread state
+
+  void resetState() {
+    content.value = "";
+    textEditingController.text = "";
+    image.value = null;
+  }
+
+
+}
