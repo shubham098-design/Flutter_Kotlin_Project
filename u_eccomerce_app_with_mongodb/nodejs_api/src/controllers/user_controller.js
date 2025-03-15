@@ -37,6 +37,31 @@ const UserController = {
       return res.json({ success: false, message: err.message });
     }
   },
+
+  updateUser: async function (req, res) {
+    try {
+      const userId = req.params.id;
+      const updateData = req.body;
+
+      const updatedUser = await UserModel.findOneAndUpdate(
+        { _id: userId },
+        updateData,
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        throw "user not found!";
+      }
+
+      return res.json({
+        success: true,
+        data: updatedUser,
+        message: "User updated!",
+      });
+    } catch (ex) {
+      return res.json({ success: false, message: ex });
+    }
+  },
 };
 
 module.exports = UserController;

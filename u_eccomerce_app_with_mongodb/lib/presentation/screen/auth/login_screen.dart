@@ -1,9 +1,11 @@
-
+import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:u_eccomerce_app_with_mongodb/presentation/screen/auth/providers/login_provider.dart';
 import 'package:u_eccomerce_app_with_mongodb/presentation/screen/auth/signup_screen.dart';
+import 'package:u_eccomerce_app_with_mongodb/presentation/screen/home/home_screen.dart';
+import 'package:u_eccomerce_app_with_mongodb/presentation/screen/splash/splash_screen.dart';
 
 import '../../../core/ui.dart';
 import '../../../logic/cubits/user_cubit.dart';
@@ -30,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<UserCubit, UserState>(
       listener: (context, state) {
         if(state is UserLoggedInState) {
-          // Navigator.pushReplacementNamed(context, SplashScreen.routeName);
+          Navigator.pushReplacementNamed(context, SplashScreen.routeName);
         }
       },
       child: Scaffold(
@@ -63,9 +65,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           return "Email address is required!";
                         }
 
-                        // if(!EmailValidator.validate(value.trim())) {
-                        //   return "Invalid email address";
-                        // }
+                        if(!EmailValidator.validate(value.trim())) {
+                          return "Invalid email address";
+                        }
 
                         return null;
                       },

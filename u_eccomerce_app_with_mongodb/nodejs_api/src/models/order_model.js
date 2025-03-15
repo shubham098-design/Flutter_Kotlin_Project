@@ -9,6 +9,10 @@ const OrderSchema = new Schema({
   user: { type: Map, required: true },
   items: { type: [OrderItemSchema], default: [] },
   status: { type: String, default: "order-placed" },
+  totalAmount: { type: Number, required: true },
+  razorpayOrderId: { type: String },
+  razorpayPaymentId: { type: String },
+  razorpaySignature: { type: String },
   updatedOn: { type: Date },
   createdOn: { type: Date },
 });

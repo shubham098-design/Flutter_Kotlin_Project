@@ -55,4 +55,25 @@ class UserRepository {
       rethrow;
     }
   }
+
+  Future<UserModel> updateUser(UserModel userModel) async {
+    try {
+      Response response = await _api.sendRequest.put(
+          "/user/${userModel.sId}",
+          data: jsonEncode(userModel.toJson())
+      );
+
+      ApiResponse apiResponse = ApiResponse.fromResponse(response);
+
+      if(!apiResponse.success) {
+        throw apiResponse.message.toString();
+      }
+
+      return UserModel.fromJson(apiResponse.data);
+    }
+    catch(ex) {
+      rethrow;
+    }
+  }
+
 }

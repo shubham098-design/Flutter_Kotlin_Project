@@ -38,6 +38,15 @@ dependencies:
   pretty_dio_logger: ^1.4.0
   flutter_bloc: ^9.1.0
   provider: ^6.1.2
+  email_validator:
+  shared_preferences:
+  cached_network_image:
+  intl:
+  flutter_carousel_slider:
+  input_quantity:
+  badges:
+  razorpay_flutter:
+  equatable:
 
 dev_dependencies:
   flutter_test:

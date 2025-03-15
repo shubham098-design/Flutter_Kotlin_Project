@@ -3,7 +3,9 @@ const CartController = {
   addToCart: async function (req, res) {
     try {
       const { product, user, quantity } = req.body;
-      const foundCart = await CartModel.findOne({ user: user });
+      const foundCart = await CartModel.findOne({ user: user }).populate(
+        "items.product"
+      );
 
       // if cart does not exist
       if (!foundCart) {
@@ -17,6 +19,14 @@ const CartController = {
         });
       }
 
+      // Deleting the item if it already exist
+
+      const deletedItem = await CartModel.findOneAndUpdate(
+        { user: user, "items.product": product },
+        { $pull: { items: { product: product } } },
+        { new: true }
+      );
+
       // if cart already exists
       const updatedCart = await CartModel.findOneAndUpdate(
         { user: user },
@@ -25,7 +35,7 @@ const CartController = {
       );
       return res.json({
         success: true,
-        data: updatedCart,
+        data: updatedCart.items,
         message: "Product added to cart successfully",
       });
     } catch (err) {
