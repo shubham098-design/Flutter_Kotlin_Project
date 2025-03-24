@@ -13,15 +13,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use(cors());
 
-// app.get("/", (req, res) => {
-//   res.json({ message: "Hello World!", errror: "error" });
-// });
-
-// const DB =
-//   "mongodb+srv://shubhamdhaniyan:shu251203@cluster0.z1uay.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-
-// const DB =
-//   "mongodb+srv://shubhamdhaniyan09:shu251203@cluster0.tb197.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 
 const DB =
   "mongodb+srv://shubhamdhaniyan09:shu251203@cluster0.0btbu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";

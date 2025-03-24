@@ -32,7 +32,7 @@ const CartController = {
         { user: user },
         { $push: { items: { product: product, quantity: quantity } } },
         { new: true }
-      );
+      ).populate("items.product");
       return res.json({
         success: true,
         data: updatedCart.items,
