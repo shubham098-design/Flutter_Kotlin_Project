@@ -19,7 +19,6 @@ app.use(admineRouter);
 mongoose
   .connect(DB)
   .then(() => {
-    a;
     console.log("Connected to MongoDB");
   })
   .catch((err) => {
