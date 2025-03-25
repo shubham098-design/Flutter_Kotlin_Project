@@ -61,9 +61,13 @@ authRouter.post("/tokenIsValid", async (req, res) => {
   }
 });
 
-authRouter.get("/", async (req, res) => {
+authRouter.get("/api/userbyId", async (req, res) => {
   const user = await User.findById(req.user);
   res.json({ ...user._doc, token: req.token });
+});
+
+authRouter.get("/", async (req, res) => {
+  res.send("hello World");
 });
 
 authRouter.get("/api/users", async (req, res) => {

@@ -19,10 +19,11 @@ app.use(admineRouter);
 mongoose
   .connect(DB)
   .then(() => {
+    a;
     console.log("Connected to MongoDB");
   })
   .catch((err) => {
     console.log(err);
   });
 
-app.listen(3000, () => console.log("Server is running on port 3000"));
+app.listen(3000, () => console.log("http://localhost:3000"));
