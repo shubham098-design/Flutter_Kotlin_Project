@@ -6,8 +6,8 @@ const Product = require("../models/product");
 // add product
 admineRouter.post("/api/addproduct", async (req, res) => {
   try {
-    const { name, price, description, category, image } = req.body;
-    let product = new Product({ name, price, description, category, image });
+    const { name, price, description, category, image,quantity } = req.body;
+    let product = new Product({ name, price, description, category, image ,quantity});
     product = await product.save();
     res
       .status(201)
