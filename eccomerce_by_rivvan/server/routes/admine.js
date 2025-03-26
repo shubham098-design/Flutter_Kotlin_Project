@@ -4,7 +4,7 @@ const admine = require("../middlewares/admine");
 const Product = require("../models/product");
 
 // add product
-admineRouter.post("/api/addproduct", admine, async (req, res) => {
+admineRouter.post("/api/addproduct", async (req, res) => {
   try {
     const { name, price, description, category, image } = req.body;
     let product = new Product({ name, price, description, category, image });
@@ -18,7 +18,7 @@ admineRouter.post("/api/addproduct", admine, async (req, res) => {
   }
 });
 
-admineRouter.get("/api/products", admine, async (req, res) => {
+admineRouter.get("/api/products", async (req, res) => {
   try {
     const products = await Product.find();
     res
@@ -30,7 +30,7 @@ admineRouter.get("/api/products", admine, async (req, res) => {
   }
 });
 
-admineRouter.get("/api/products/:id", admine, async (req, res) => {
+admineRouter.get("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     res
@@ -42,7 +42,7 @@ admineRouter.get("/api/products/:id", admine, async (req, res) => {
   }
 });
 
-admineRouter.put("/api/products/:id", admine, async (req, res) => {
+admineRouter.put("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -57,7 +57,7 @@ admineRouter.put("/api/products/:id", admine, async (req, res) => {
   }
 });
 
-admineRouter.delete("/api/products/:id", admine, async (req, res) => {
+admineRouter.delete("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     res
