@@ -42,6 +42,26 @@ admineRouter.get("/api/products/:id", async (req, res) => {
   }
 });
 
+admineRouter.get("/api/products/category/:category", async (req, res) => {
+  try {
+    const category = req.params.category;
+    console.log("Requested Category:", category); // Debugging
+
+    const products = await Product.find({ category: category });
+
+    if (products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found in this category" });
+    }
+
+    res.status(200).json({ data: products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+});
+
 admineRouter.put("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
