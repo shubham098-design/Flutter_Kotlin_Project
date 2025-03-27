@@ -62,6 +62,31 @@ admineRouter.get("/api/products/category/:category", async (req, res) => {
   }
 });
 
+admineRouter.get("/api/products/search/:query", async (req, res) => {
+  try {
+    const query = req.params.query;
+    console.log("Search Query:", query);
+
+    // MongoDB `$or` operator for multiple fields search
+    const products = await Product.find({
+      $or: [
+        { name: new RegExp(query, "i") }, // Search in product name
+        { category: new RegExp(query, "i") }, // Search in category
+      ],
+    });
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: "No products found" });
+    }
+
+    res.status(200).json({ data: products });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+});
+
+
 admineRouter.put("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
