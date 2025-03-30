@@ -37,7 +37,7 @@ orderRouter.get("/api/orders/:userId", async (req, res) => {
     );
 
     if (!orders.length) {
-      return res.status(202).json({ message: "No orders found for this user" });
+      return res.status(404).json({ message: "No orders found for this user" });
     }
 
     res.status(200).json(orders);
@@ -55,7 +55,7 @@ orderRouter.get("/api/order/:orderId", async (req, res) => {
     );
 
     if (!order) {
-      return res.status(200).json({ message: "Order not found" });
+      return res.status(404).json({ message: "Order not found" });
     }
 
     res.status(200).json(order);
@@ -77,7 +77,7 @@ orderRouter.put("/api/orders/:orderId", async (req, res) => {
     );
 
     if (!updatedOrder) {
-      return res.status(200).json({ message: "Order not found" });
+      return res.status(404).json({ message: "Order not found" });
     }
 
     res
