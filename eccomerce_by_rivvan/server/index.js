@@ -9,12 +9,18 @@ const DB =
 
 // import files
 const authRouter = require("./routes/auth");
-const admineRouter = require("./routes/admine");
+const productRouter = require("./routes/product");
+const cartRouter = require("./routes/cart");
+const orderRouter = require("./routes/order");
+const userRouter = require("./routes/user");
 
 // middleware
 app.use(express.json());
 app.use(authRouter);
-app.use(admineRouter);
+app.use(productRouter);
+app.use(cartRouter);
+app.use(orderRouter);
+app.use(userRouter);
 // create server
 mongoose
   .connect(DB)
