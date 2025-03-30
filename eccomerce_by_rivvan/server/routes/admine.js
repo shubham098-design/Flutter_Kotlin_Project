@@ -1,10 +1,9 @@
 const express = require("express");
-const admineRouter = express.Router();
-const admine = require("../middlewares/admine");
+const productRouter = express.Router();
 const Product = require("../models/product");
 
 // add product
-admineRouter.post("/api/addproduct", async (req, res) => {
+productRouter.post("/api/addproduct", async (req, res) => {
   try {
     const { name, price, description, category, image,quantity } = req.body;
     let product = new Product({ name, price, description, category, image ,quantity});
@@ -18,7 +17,7 @@ admineRouter.post("/api/addproduct", async (req, res) => {
   }
 });
 
-admineRouter.get("/api/products", async (req, res) => {
+productRouter.get("/api/products", async (req, res) => {
   try {
     const products = await Product.find();
     res
@@ -42,7 +41,7 @@ admineRouter.get("/api/products/:id", async (req, res) => {
   }
 });
 
-admineRouter.get("/api/products/category/:category", async (req, res) => {
+productRouter.get("/api/products/category/:category", async (req, res) => {
   try {
     const category = req.params.category;
     console.log("Requested Category:", category); // Debugging
@@ -62,7 +61,7 @@ admineRouter.get("/api/products/category/:category", async (req, res) => {
   }
 });
 
-admineRouter.get("/api/products/search/:query", async (req, res) => {
+productRouter.get("/api/products/search/:query", async (req, res) => {
   try {
     const query = req.params.query;
     console.log("Search Query:", query);
@@ -87,7 +86,7 @@ admineRouter.get("/api/products/search/:query", async (req, res) => {
 });
 
 
-admineRouter.put("/api/products/:id", async (req, res) => {
+productRouter.put("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
@@ -102,7 +101,7 @@ admineRouter.put("/api/products/:id", async (req, res) => {
   }
 });
 
-admineRouter.delete("/api/products/:id", async (req, res) => {
+productRouter.delete("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
     res
@@ -114,4 +113,4 @@ admineRouter.delete("/api/products/:id", async (req, res) => {
   }
 });
 
-module.exports = admineRouter;
+module.exports = productRouter;
