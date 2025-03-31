@@ -92,12 +92,25 @@ authRouter.get("/api/users/:id", async (req, res) => {
   }
 });
 
+
 authRouter.put("/api/users/:id", async (req, res) => {
   try {
-    const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
-    res.status(200).json({ data: user, message: "User updated successfully" });
+    const { name, email, address, type } = req.body; // Extract only user details (Not Cart)
+    
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update only the specified fields
+    if (name) user.name = name;
+    if (email) user.email = email;
+    if (address) user.address = address;
+    if (type) user.type = type;
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({ data: updatedUser, message: "User updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Something went wrong" });
