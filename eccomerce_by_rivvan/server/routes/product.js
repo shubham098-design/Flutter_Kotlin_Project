@@ -1,12 +1,19 @@
 const express = require("express");
+const { Product } = require("../models/product");
 const productRouter = express.Router();
-const Product = require("../models/product");
 
 // add product
 productRouter.post("/api/addproduct", async (req, res) => {
   try {
-    const { name, price, description, category, image,quantity } = req.body;
-    let product = new Product({ name, price, description, category, image ,quantity});
+    const { name, price, description, category, image, quantity } = req.body;
+    let product = new Product({
+      name,
+      price,
+      description,
+      category,
+      image,
+      quantity,
+    });
     product = await product.save();
     res
       .status(201)
@@ -29,7 +36,7 @@ productRouter.get("/api/products", async (req, res) => {
   }
 });
 
-admineRouter.get("/api/products/:id", async (req, res) => {
+productRouter.get("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
     res
@@ -84,7 +91,6 @@ productRouter.get("/api/products/search/:query", async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 });
-
 
 productRouter.put("/api/products/:id", async (req, res) => {
   try {
