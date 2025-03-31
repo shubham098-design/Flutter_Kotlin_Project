@@ -11,4 +11,5 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.model("Product", productSchema);
 
-module.exports = Product;
+// ✅ Export both Product and productSchema
+module.exports = { Product, productSchema };
