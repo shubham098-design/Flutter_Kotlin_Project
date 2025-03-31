@@ -3,43 +3,6 @@ const { Product } = require("../models/product");
 const User = require("../models/user");
 const userRouter = express.Router();
 
-// this rivan method is for add to cart
-userRouter.post("api/add-to-cart", async (req, res) => {
-  try {
-    const { id } = req.body;
-    const product = await Product.findById(id);
-    let user = await User.findById(req.user);
-
-    if (user.cart.length == 0) {
-      user.cart.push({ product, quantity: 1 });
-      await user.save();
-    } else {
-      let isProductFound = false;
-      for (let i = 0; i < user.cart.length; i++) {
-        if (user.cart[i].product._id.equals(product._id)) {
-          user.cart[i].quantity += 1;
-          isProductFound = true;
-          break;
-        }
-      }
-      if (isProductFound) {
-        let producttt = user.cart.find((productt) =>
-          productt.product_id.equals(product._id)
-        );
-
-        producttt.quantity += 1;
-      } else {
-        user.cart.push({ product, quantity: 1 });
-      }
-    }
-    user = await user.save();
-    res.json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
-
 userRouter.post("/api/addToCart", async (req, res) => {
   try {
     const { userId, productId } = req.body;
