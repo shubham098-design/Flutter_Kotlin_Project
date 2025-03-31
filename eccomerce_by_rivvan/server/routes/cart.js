@@ -1,5 +1,5 @@
 const express = require("express");
-const Cart = require("../models/cartModel");
+const Cart = require("../models/cart");
 
 const cartRouter = express.Router();
 
@@ -13,7 +13,9 @@ cartRouter.post("/api/cart", async (req, res) => {
     if (!cart) {
       cart = new Cart({ userId, products: [{ productId, quantity }] });
     } else {
-      const productIndex = cart.products.findIndex(p => p.productId.toString() === productId);
+      const productIndex = cart.products.findIndex(
+        (p) => p.productId.toString() === productId
+      );
 
       if (productIndex > -1) {
         cart.products[productIndex].quantity += quantity;
@@ -33,9 +35,11 @@ cartRouter.post("/api/cart", async (req, res) => {
 // Get Cart by User ID
 cartRouter.get("/api/cart/:userId", async (req, res) => {
   try {
-    const cart = await Cart.findOne({ userId: req.params.userId }).populate("products.productId");
+    const cart = await Cart.findOne({ userId: req.params.userId }).populate(
+      "products.productId"
+    );
     if (!cart) return res.status(404).json({ message: "Cart not found" });
-    
+
     res.status(200).json({ cart });
   } catch (error) {
     console.error(error);
@@ -51,7 +55,9 @@ cartRouter.delete("/api/cart/:userId/:productId", async (req, res) => {
     let cart = await Cart.findOne({ userId });
     if (!cart) return res.status(404).json({ message: "Cart not found" });
 
-    cart.products = cart.products.filter(p => p.productId.toString() !== productId);
+    cart.products = cart.products.filter(
+      (p) => p.productId.toString() !== productId
+    );
 
     await cart.save();
     res.status(200).json({ message: "Product removed from cart", cart });
