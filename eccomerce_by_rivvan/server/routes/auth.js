@@ -5,30 +5,54 @@ const jwt = require("jsonwebtoken");
 
 const authRouter = express.Router();
 
+// ✅ Signup API
 authRouter.post("/api/users/signup", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, address, type } = req.body;
 
-    // Check if user already exists
+    // ✅ Check if user already exists
     const existingUser = await User.findOne({ email });
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
+    }
 
-    // Hash password
+    // ✅ Hash Password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create new user
-    const newUser = new User({ name, email, password: hashedPassword });
+    // ✅ Create New User
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword,
+      address: address || "", // Default empty
+      type: type || "user", // Default to "user"
+    });
+
     await newUser.save();
 
-    res.status(201).json({ message: "User registered successfully" });
+    // ✅ Generate JWT Token
+    const token = jwt.sign({ userId: newUser._id }, "your_secret_key", { expiresIn: "7d" });
+
+    // ✅ Send Response
+    res.status(201).json({
+      message: "User registered successfully",
+      token,
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        address: newUser.address,
+        type: newUser.type,
+      },
+    });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("🚨 Signup Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 
-
-authRouter.post("/login", async (req, res) => {
+authRouter.post("/api/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
