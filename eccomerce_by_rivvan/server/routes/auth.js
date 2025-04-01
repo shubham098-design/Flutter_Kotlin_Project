@@ -27,23 +27,37 @@ authRouter.post("/api/users/signup", async (req, res) => {
   }
 });
 
-authRouter.post("/login", async (req, res) => {
+
+app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email });
-    if (!user) return res.json({ message: "User not found" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.json({ message: "Invalid password" });
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
 
-    const token = jwt.sign({ userId: user._id }, "secret");
+    // Generate JWT Token
+    const token = jwt.sign({ userId: user._id }, "your_secret_key", { expiresIn: "7d" });
 
-    res.json({ message: "Login successful", token });
+    // ✅ Send Full User Data in Response
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        address: user.address,
+        type: user.type,
+      }
+    });
   } catch (error) {
-    res.json({ message: error.message });
+    console.error("Login Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 authRouter.post("/api/users/logout", (req, res) => {
   res.json({ message: "Logout successful" });
