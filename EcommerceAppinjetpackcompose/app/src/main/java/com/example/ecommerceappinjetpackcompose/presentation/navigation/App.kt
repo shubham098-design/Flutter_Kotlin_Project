@@ -1,0 +1,188 @@
+package com.example.ecommerceappinjetpackcompose.presentation.navigation
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navigation
+import androidx.navigation.toRoute
+import com.example.bottombar.AnimatedBottomBar
+import com.example.bottombar.components.BottomBarItem
+import com.example.bottombar.model.IndicatorDirection
+import com.example.bottombar.model.IndicatorStyle
+import com.example.ecommerceappinjetpackcompose.presentation.LoginScreen
+import com.example.ecommerceappinjetpackcompose.presentation.SignUpScreen
+import com.example.ecommerceappinjetpackcompose.presentation.navigation.Route.CheckoutScreen
+import com.example.ecommerceappinjetpackcompose.presentation.navigation.Route.EachProductDetailScreen
+import com.example.ecommerceappinjetpackcompose.presentation.navigation.Route.HomeScreen
+import com.example.ecommerceappinjetpackcompose.presentation.screen.AllCategoriesScreen
+import com.example.ecommerceappinjetpackcompose.presentation.screen.CartScreen
+import com.example.ecommerceappinjetpackcompose.presentation.screen.CheckoutScreenUi
+import com.example.ecommerceappinjetpackcompose.presentation.screen.EachCategoryProductScreenUI
+import com.example.ecommerceappinjetpackcompose.presentation.screen.EachProductDetailUi
+import com.example.ecommerceappinjetpackcompose.presentation.screen.GetAllFav
+import com.example.ecommerceappinjetpackcompose.presentation.screen.GetAllProducts
+import com.example.ecommerceappinjetpackcompose.presentation.screen.HomeScreenUi
+import com.example.ecommerceappinjetpackcompose.presentation.screen.ProfileScreenUi
+import com.google.firebase.auth.FirebaseAuth
+
+
+data class BottomNavItem(val name: String, val icon: ImageVector,val unselectedIcon: ImageVector)
+
+@Composable
+fun App(
+    firebaseAuth: FirebaseAuth,
+) {
+    val navController = rememberNavController()
+
+    var selectedItem by remember { mutableStateOf(0) }
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+
+    val currentDestination = navBackStackEntry?.destination?.route
+
+    val shouldShowBottomBar = remember { mutableStateOf(false) }
+
+    LaunchedEffect(currentDestination) {
+        shouldShowBottomBar.value = when (currentDestination) {
+            Route.LoginScreen::class.qualifiedName , Route.SignUpScreen::class.qualifiedName -> false
+            else -> true
+        }
+    }
+
+    val BottomNavItem = listOf(
+        BottomNavItem(name = "Home", icon = Icons.Default.Home, unselectedIcon = Icons.Outlined.Home),
+        BottomNavItem(name = "Wishlist", icon = Icons.Default.Favorite, unselectedIcon = Icons.Outlined.FavoriteBorder),
+        BottomNavItem(name = "Cart", icon = Icons.Default.ShoppingCart, unselectedIcon = Icons.Outlined.ShoppingCart),
+        BottomNavItem(name = "Profile", icon = Icons.Default.Person, unselectedIcon = Icons.Outlined.Person),
+    )
+
+    var startScreen = if (firebaseAuth.currentUser != null) {
+        SubNavigation.MainHomeScreen
+    }else{
+        SubNavigation.LoginSignupScreen
+    }
+
+    Scaffold(
+        bottomBar = {
+            if (shouldShowBottomBar.value) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth().padding(
+                        bottom = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                    ),
+
+                ) {
+                    AnimatedBottomBar(
+                        selectedItem = selectedItem,
+                        itemSize = BottomNavItem.size,
+                        containerColor = Color.Transparent,
+                        indicatorColor = Color.Green,
+                        indicatorDirection = IndicatorDirection.BOTTOM,
+                        indicatorStyle = IndicatorStyle.FILLED
+                    ) {
+                        BottomNavItem.forEachIndexed { index, item ->
+                            BottomBarItem(
+                                selected = index == selectedItem,
+                                onClick = {
+                                    selectedItem = index
+                                   when (index){
+                                       0-> navController.navigate(Route.HomeScreen)
+                                       1-> navController.navigate(Route.WishlistScreen)
+                                       2-> navController.navigate(Route.CartScreen)
+                                       3-> navController.navigate(Route.ProfileScreen)
+
+                                   }
+                                },
+                                imageVector = item.icon,
+                                label = item.name,
+                                containerColor = Color.Transparent
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    ) { innerPadding ->
+
+        innerPadding
+
+        Box(
+            modifier = Modifier.padding(bottom = if (shouldShowBottomBar.value) 60.dp else 0.dp)
+        ){
+            NavHost(navController = navController, startDestination = startScreen){
+                navigation<SubNavigation.LoginSignupScreen>(startDestination = Route.LoginScreen){
+                    composable<Route.LoginScreen> {
+                        LoginScreen(navController = navController)
+                    }
+                    composable<Route.SignUpScreen> {
+                        SignUpScreen(navController = navController)
+
+                    }
+                }
+                navigation<SubNavigation.MainHomeScreen>(startDestination = Route.HomeScreen){
+                    composable<Route.HomeScreen> {
+                        HomeScreenUi(navController = navController)
+                    }
+                    composable<Route.ProfileScreen> {
+                        ProfileScreenUi(navController = navController,firebaseAuth = firebaseAuth)
+                    }
+                    composable<Route.WishlistScreen> {
+                        GetAllFav(navController=navController)
+                    }
+                    composable<Route.CartScreen> {
+                        CartScreen(navController = navController)
+                    }
+                    composable<Route.SeeAllProductScreen>{
+                        GetAllProducts(navController=navController)
+                    }
+                    composable<Route.AllCategoriesScreen> {
+                        AllCategoriesScreen(navController = navController)
+                    }
+                    composable<Route.EachProductDetailScreen> {
+                        var product : Route.EachProductDetailScreen = it.toRoute()
+                        EachProductDetailUi(navController = navController, productId = product.productId)
+                    }
+                    composable<Route.EachCategoryItemScreen> {
+                        var category: Route.EachCategoryItemScreen = it.toRoute()
+                        EachCategoryProductScreenUI(
+                            navController = navController,
+                            categoryName = category.categoryName
+                        )
+                    }
+                    composable<Route.CheckoutScreen> {
+                        var product: Route.CheckoutScreen = it.toRoute()
+                        CheckoutScreenUi(navController = navController, productId = product.productId)
+                    }
+                }
+            }
+        }
+    }
+}

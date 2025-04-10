@@ -1,0 +1,155 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:r_goldsmith_shop_flutter/admine/models/product_model.dart';
+import 'package:r_goldsmith_shop_flutter/user/route/routes.dart';
+
+import '../controller/product_controller.dart';
+import '../widget/banner_container.dart';
+import '../widget/category_container.dart';
+import '../widget/explore_latest_container.dart';
+import '../widget/jewelry_card.dart';
+import 'f_explore_page.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  UserProductController productController = Get.put(UserProductController());
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Royals Goldsmith Shop",style: TextStyle(color: Colors.black54),),),
+      body: Obx(
+          (){
+            if (productController.getProductsLoading.value) {
+              return Center(child: CircularProgressIndicator()); // Loading state
+            }
+            if (productController.products.isEmpty) {
+              return Center(child: Text("No products found"));
+            }
+            return SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        BannerContainer(),
+                        BannerContainer(),
+                        BannerContainer(),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Divider(thickness: 1),
+                  SizedBox(height: 10,),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        CategoryContainer(imageUrl: "images/necklace.png",name: "Alls",voidCallback: (){
+                          Get.toNamed(RoutesName.explore);
+                        },),
+                        CategoryContainer(imageUrl: "images/bangles.webp",name: "Bangle",
+                        voidCallback: (){
+                          Get.toNamed(RoutesName.show_bangles_category);
+                        },),
+                        CategoryContainer(imageUrl: "images/bracelet.png",name: "Braclet",voidCallback: (){
+                          Get.toNamed(RoutesName.show_braclet_category);
+                        },),
+                        CategoryContainer(imageUrl: "images/earing.png",name: "Earing", voidCallback: (){
+                          Get.toNamed(RoutesName.show_earing_category);
+                        },),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Divider(thickness: 1),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("New Arrival",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                        Text("more >",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17,color: Colors.redAccent),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    height: 250,
+                    child: ListView.builder(itemCount: productController.products.length,
+                        scrollDirection: Axis.horizontal,
+                        physics: BouncingScrollPhysics(),
+                        shrinkWrap: true,itemBuilder: (context,index){
+                        final product =  productController.products[index];
+                      return JewelryCard(product: product,voidCallback: (){
+                        Get.toNamed(RoutesName.productDetail,arguments: product);
+                      },);
+                    }),
+                  ),
+
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10,right: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Explore Latest",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),),
+                        Text("more >",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 17,color: Colors.redAccent),),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10, right: 10),
+                    child: GridView.builder(
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                        childAspectRatio: 0.6, // Adjust ratio to prevent overflow
+                      ),
+                      itemCount: productController.products.length, // Number of items
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final product =  productController.products[index];
+                        return ExploreLatestContainer(product: product,voidCallback: (){
+                         Get.toNamed(RoutesName.productDetail,arguments: product);
+                        },);
+                      },
+                    ),
+                  )
+                ],
+              ),
+            );
+          },
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "110670111",
+    "project_id": "ecommerce-app-in-jetpack",
+    "storage_bucket": "ecommerce-app-in-jetpack.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110670111:android:b6cc8034d8bed6d0ed402a",
+        "android_client_info": {
+          "package_name": "com.example.ecommerceappinjetpackcompose"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAeUPu2BGJoD9iwl5VKDW5YGNyz-AEBw4M"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

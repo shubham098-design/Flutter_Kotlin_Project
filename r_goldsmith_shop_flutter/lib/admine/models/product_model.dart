@@ -1,0 +1,35 @@
+class Product {
+  final int id;
+  final DateTime createdAt;
+  final String name;
+  final String description;
+  final String price;
+  final String stock;
+  final String firstImageUrl;
+  final String category;
+
+  Product({
+    required this.id,
+    required this.createdAt,
+    required this.name,
+    required this.description,
+    required this.price,
+    required this.stock,
+    required this.firstImageUrl,
+    required this.category,
+  });
+
+  // ✅ JSON se Dart Object me convert kare
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      createdAt: DateTime.parse(json['created_at']),
+      name: json['name'],
+      description: json['description'],
+      price: json['price'],
+      stock: json['stock'],
+      firstImageUrl: json['first_image_url'],
+      category: json['category'],
+    );
+  }
+}
